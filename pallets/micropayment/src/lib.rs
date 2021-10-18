@@ -495,7 +495,14 @@ pub mod pallet {
             let result = T::Currency::mutate_account_balance(account, |balance| {
                 let min_balance = T::Currency::minimum_balance();
                 // ensure after taking amount from account, remaining balance is grater than min_balance
+<<<<<<< HEAD
                 if balance.free <= amount.saturating_add(min_balance) {
+=======
+                if amount > balance.free
+                    || balance.free <= min_balance
+                    || amount >= balance.free - min_balance
+                {
+>>>>>>> micropayment doesn't take all DPR from account
                     return Zero::zero();
                 } else {
                     balance.free -= amount;
