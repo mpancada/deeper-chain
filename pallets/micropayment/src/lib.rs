@@ -59,9 +59,13 @@ pub mod pallet {
     use pallet_deeper_node::NodeInterface;
     use sp_core::sr25519;
     use sp_io::crypto::sr25519_verify;
+<<<<<<< HEAD
     use sp_runtime::traits::{Saturating, Zero};
     use sp_runtime::DispatchError;
     use sp_std::prelude::Vec;
+=======
+    use sp_runtime::traits::{Saturating, StoredMapError, Zero};
+>>>>>>> remove redundant conditions
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -496,6 +500,7 @@ pub mod pallet {
                 let min_balance = T::Currency::minimum_balance();
                 // ensure after taking amount from account, remaining balance is grater than min_balance
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if balance.free <= amount.saturating_add(min_balance) {
 =======
                 if amount > balance.free
@@ -503,6 +508,9 @@ pub mod pallet {
                     || amount >= balance.free - min_balance
                 {
 >>>>>>> micropayment doesn't take all DPR from account
+=======
+                if balance.free <= amount.saturating_add(min_balance) {
+>>>>>>> remove redundant conditions
                     return Zero::zero();
                 } else {
                     balance.free -= amount;
