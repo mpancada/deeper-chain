@@ -123,7 +123,11 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     // and set impl_version to 0. If only runtime
     // implementation changes and behavior does not, then leave spec_version as
     // is and increment impl_version.
+<<<<<<< HEAD
     spec_version: 7,
+=======
+    spec_version: 4,
+>>>>>>> remove conucil module
     impl_version: 0,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 3,
@@ -1138,6 +1142,7 @@ construct_runtime!(
         NodeBlock = node_primitives::Block,
         UncheckedExtrinsic = UncheckedExtrinsic
     {
+<<<<<<< HEAD
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Utility: pallet_utility::{Pallet, Call, Event},
         Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned},
@@ -1178,6 +1183,48 @@ construct_runtime!(
         Micropayment: pallet_micropayment::{Pallet, Call, Storage, Event<T>},
         DeeperNode: pallet_deeper_node::{Pallet, Call, Storage, Event<T>, Config<T> },
         CreditAccumulation: pallet_credit_accumulation::{Pallet, Call, Storage, Event<T>},
+=======
+        System: frame_system::{Module, Call, Config, Storage, Event<T>},
+        Utility: pallet_utility::{Module, Call, Event},
+        Babe: pallet_babe::{Module, Call, Storage, Config, Inherent, ValidateUnsigned},
+        Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
+        Authorship: pallet_authorship::{Module, Call, Storage, Inherent},
+        Indices: pallet_indices::{Module, Call, Storage, Config<T>, Event<T>},
+        Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
+        TransactionPayment: pallet_transaction_payment::{Module, Storage},
+        Credit: pallet_credit::{Module, Call, Storage, Event<T>, Config<T>},
+        Staking: pallet_staking::{Module, Call, Config<T>, Storage, Event<T>},
+        Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
+        Democracy: pallet_democracy::{Module, Call, Storage, Config, Event<T>},
+        //Council: pallet_collective::<Instance1>::{Module, Call, Storage, Origin<T>, Event<T>, Config<T>},
+        TechnicalCommittee: pallet_collective::<Instance2>::{Module, Call, Storage, Origin<T>, Event<T>, Config<T>},
+        Elections: pallet_elections_phragmen::{Module, Call, Storage, Event<T>, Config<T>},
+        TechnicalMembership: pallet_membership::<Instance1>::{Module, Call, Storage, Event<T>, Config<T>},
+        Grandpa: pallet_grandpa::{Module, Call, Storage, Config, Event, ValidateUnsigned},
+        Treasury: pallet_treasury::{Module, Call, Storage, Config, Event<T>},
+        Contracts: pallet_contracts::{Module, Call, Config<T>, Storage, Event<T>},
+        Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
+        ImOnline: pallet_im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
+        AuthorityDiscovery: pallet_authority_discovery::{Module, Call, Config},
+        Offences: pallet_offences::{Module, Call, Storage, Event},
+        Historical: pallet_session_historical::{Module},
+        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
+        Identity: pallet_identity::{Module, Call, Storage, Event<T>},
+        Society: pallet_society::{Module, Call, Storage, Event<T>, Config<T>},
+        Recovery: pallet_recovery::{Module, Call, Storage, Event<T>},
+        Vesting: pallet_vesting::{Module, Call, Storage, Event<T>, Config<T>},
+        Scheduler: pallet_scheduler::{Module, Call, Storage, Event<T>},
+        Proxy: pallet_proxy::{Module, Call, Storage, Event<T>},
+        Multisig: pallet_multisig::{Module, Call, Storage, Event<T>},
+        Bounties: pallet_bounties::{Module, Call, Storage, Event<T>},
+        Tips: pallet_tips::{Module, Call, Storage, Event<T>},
+        Assets: pallet_assets::{Module, Call, Storage, Event<T>},
+        Mmr: pallet_mmr::{Module, Storage},
+        Lottery: pallet_lottery::{Module, Call, Storage, Event<T>},
+        Micropayment: pallet_micropayment::{Module, Call, Storage, Event<T>},
+        DeeperNode: pallet_deeper_node::{Module, Call, Storage, Event<T>, Config<T> },
+        CreditAccumulation: pallet_credit_accumulation::{Module, Call, Storage, Event<T>},
+>>>>>>> remove conucil module
     }
 );
 

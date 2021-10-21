@@ -104,6 +104,7 @@ pub fn config_endowed(
         },
         babe: BabeConfig {
             authorities: vec![],
+<<<<<<< HEAD
             epoch_config: Some(BABE_GENESIS_EPOCH_CONFIG),
         },
         grandpa: GrandpaConfig {
@@ -118,6 +119,19 @@ pub fn config_endowed(
         sudo: Default::default(),
         treasury: Default::default(),
         society: SocietyConfig {
+=======
+        }),
+        pallet_im_online: Some(Default::default()),
+        pallet_authority_discovery: Some(Default::default()),
+        pallet_democracy: Some(Default::default()),
+        //pallet_collective_Instance1: Some(Default::default()),
+        pallet_collective_Instance2: Some(Default::default()),
+        pallet_membership_Instance1: Some(Default::default()),
+        pallet_elections_phragmen: Some(Default::default()),
+        pallet_sudo: Some(Default::default()),
+        pallet_treasury: Some(Default::default()),
+        pallet_society: Some(SocietyConfig {
+>>>>>>> remove conucil module
             members: vec![alice(), bob()],
             pot: 0,
             max_members: 999,

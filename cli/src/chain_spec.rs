@@ -23,10 +23,17 @@ use hex_literal::hex;
 use node_runtime::constants::currency::*;
 use node_runtime::Block;
 use node_runtime::{
+<<<<<<< HEAD
     wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, CreditConfig,
     DeeperNodeConfig, DemocracyConfig, ElectionsConfig, GrandpaConfig, ImOnlineConfig,
     IndicesConfig, SessionConfig, SessionKeys, SocietyConfig, StakerStatus, StakingConfig,
     SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+=======
+    wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, ContractsConfig,
+    CreditConfig, DeeperNodeConfig, DemocracyConfig, ElectionsConfig, GrandpaConfig,
+    ImOnlineConfig, IndicesConfig, SessionConfig, SessionKeys, SocietyConfig, StakerStatus,
+    StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+>>>>>>> remove conucil module
 };
 use pallet_credit::{CreditData, CreditLevel, CreditSetting};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
@@ -390,8 +397,14 @@ pub fn testnet_genesis(
                 .cloned()
                 .map(|member| (member.0, stash))
                 .collect(),
+<<<<<<< HEAD
         },
         technical_committee: TechnicalCommitteeConfig {
+=======
+        }),
+        //pallet_collective_Instance1: Some(CouncilConfig::default()),
+        pallet_collective_Instance2: Some(TechnicalCommitteeConfig {
+>>>>>>> remove conucil module
             members: endowed_accounts
                 .iter()
                 .take((endowed_accounts.len() + 1) / 2)
