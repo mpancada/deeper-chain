@@ -270,8 +270,12 @@ pub mod pallet {
             } else if Channel::<T>::contains_key(&signer, &account_id) {
                 // signer is client
                 let chan = Channel::<T>::get(&signer, &account_id);
+<<<<<<< HEAD
 
                 let current_block = <frame_system::Pallet<T>>::block_number();
+=======
+                let current_block = <frame_system::Module<T>>::block_number();
+>>>>>>> client can close channel when server is offline longer than 1 era (#103)
                 if chan.expiration < current_block
                     || T::NodeInterface::get_eras_offline(&chan.server) >= 1
                 {
