@@ -262,8 +262,13 @@ pub mod pallet {
         CreditSettingUpdated(CreditSetting<BalanceOf<T>>, T::BlockNumber),
         CreditDataAdded(T::AccountId, CreditData, T::BlockNumber),
         CreditDataUpdated(T::AccountId, CreditData, T::BlockNumber),
+<<<<<<< HEAD
         CreditScoreSlashed(T::AccountId, u64, T::BlockNumber),
         GetRewardResult(T::AccountId, EraIndex, EraIndex, u8), //status: 0,Normal; 1-6, Error
+=======
+        CreditScoreIncreased(T::AccountId, u64, T::BlockNumber),
+        CreditScoreSlashed(T::AccountId, u64, T::BlockNumber),
+>>>>>>> Some changes related to events in the credit pallet. (#110)
     }
 
     #[pallet::error]
@@ -292,7 +297,11 @@ pub mod pallet {
             Self::_update_credit_setting(credit_setting.clone());
             Self::deposit_event(Event::CreditSettingUpdated(
                 credit_setting,
+<<<<<<< HEAD
                 <frame_system::Pallet<T>>::block_number(),
+=======
+                <frame_system::Module<T>>::block_number(),
+>>>>>>> Some changes related to events in the credit pallet. (#110)
             ));
             Ok(().into())
         }
@@ -307,7 +316,11 @@ pub mod pallet {
             ensure_root(origin)?;
             Self::check_credit_data(&credit_data)?;
 
+<<<<<<< HEAD
             let current_block_numbers = <frame_system::Pallet<T>>::block_number();
+=======
+            let current_block_numbers = <frame_system::Module<T>>::block_number();
+>>>>>>> Some changes related to events in the credit pallet. (#110)
             if UserCredit::<T>::contains_key(&account_id) {
                 UserCredit::<T>::mutate(&account_id, |d| match d {
                     Some(data) => *data = credit_data.clone(),
@@ -346,7 +359,11 @@ pub mod pallet {
 
         /// inner: update credit score
         fn _update_credit(account_id: &T::AccountId, score: u64) -> bool {
+<<<<<<< HEAD
             let current_block_numbers = <frame_system::Pallet<T>>::block_number();
+=======
+            let current_block_numbers = <frame_system::Module<T>>::block_number();
+>>>>>>> Some changes related to events in the credit pallet. (#110)
             if UserCredit::<T>::contains_key(account_id) {
                 UserCredit::<T>::mutate(account_id, |v| match v {
                     Some(credit_data) => {
@@ -574,7 +591,11 @@ pub mod pallet {
                         Self::deposit_event(Event::CreditScoreSlashed(
                             (*account_id).clone(),
                             (*credit_data).clone().credit,
+<<<<<<< HEAD
                             <frame_system::Pallet<T>>::block_number(),
+=======
+                            <frame_system::Module<T>>::block_number(),
+>>>>>>> Some changes related to events in the credit pallet. (#110)
                         ));
                     }
                     _ => (),
@@ -798,9 +819,18 @@ pub mod pallet {
                     if Self::_update_credit(&server_id, new_credit) {
                         LastCreditUpdateTimestamp::<T>::insert(&server_id, now_as_secs);
                         Self::update_credit_history(&server_id, current_era);
+<<<<<<< HEAD
                         if era_used {
                             LastCreditUpdate::<T>::remove(server_id);
                         }
+=======
+
+                        Self::deposit_event(Event::CreditScoreIncreased(
+                            server_id,
+                            new_credit,
+                            <frame_system::Module<T>>::block_number(),
+                        ));
+>>>>>>> Some changes related to events in the credit pallet. (#110)
                     } else {
                         log!(
                             error,
@@ -841,6 +871,12 @@ pub mod pallet {
                 if Self::_update_credit(&server_id, new_credit) {
                     LastCreditUpdateTimestamp::<T>::insert(&server_id, now_as_secs);
                     Self::update_credit_history(&server_id, current_era);
+
+                    Self::deposit_event(Event::CreditScoreIncreased(
+                        server_id,
+                        new_credit,
+                        <frame_system::Module<T>>::block_number(),
+                    ));
                 } else {
                     log!(
                         error,
