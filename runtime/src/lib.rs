@@ -124,10 +124,14 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     // implementation changes and behavior does not, then leave spec_version as
     // is and increment impl_version.
 <<<<<<< HEAD
+<<<<<<< HEAD
     spec_version: 7,
 =======
     spec_version: 4,
 >>>>>>> remove conucil module
+=======
+    spec_version: 5,
+>>>>>>> update sepc_version:5 and edit Readme.md (#119)
     impl_version: 0,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 3,
