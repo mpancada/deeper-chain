@@ -458,6 +458,67 @@ where
     }
 }
 
+<<<<<<< HEAD
+=======
+pub trait Config: frame_system::Config + SendTransactionTypes<Call<Self>> {
+    /// Number of blocks per era.
+    type BlocksPerEra: Get<<Self as frame_system::Config>::BlockNumber>;
+    /// The staking balance.
+    type Currency: LockableCurrency<Self::AccountId, Moment = Self::BlockNumber>;
+
+    /// CreditInterface of credit pallet
+    type CreditInterface: CreditInterface<Self::AccountId, BalanceOf<Self>>;
+
+    /// NodeInterface of deeper-node pallet
+    type NodeInterface: NodeInterface<Self::AccountId, Self::BlockNumber>;
+
+    /// max delegates can be selected by one delegator
+    type MaxDelegates: Get<usize>;
+
+    /// Time used for computing era duration.
+    ///
+    /// It is guaranteed to start being called from the first `on_finalize`. Thus value at genesis
+    /// is not used.
+    type UnixTime: UnixTime;
+
+    type NumberToCurrency: Convert<u128, BalanceOf<Self>>;
+
+    /// The overarching event type.
+    type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
+
+    /// Handler for the unbalanced reduction when slashing a staker.
+    type Slash: OnUnbalanced<NegativeImbalanceOf<Self>>;
+
+    /// Number of sessions per era.
+    type SessionsPerEra: Get<SessionIndex>;
+
+    /// Number of eras that staked funds must remain bonded for.
+    type BondingDuration: Get<EraIndex>;
+
+    /// Number of eras that slashes are deferred by, after computation.
+    ///
+    /// This should be less than the bonding duration. Set to 0 if slashes
+    /// should be applied immediately, without opportunity for intervention.
+    type SlashDeferDuration: Get<EraIndex>;
+
+    /// The origin which can cancel a deferred slash. Root can always do this.
+    type SlashCancelOrigin: EnsureOrigin<Self::Origin>;
+
+    /// Interface for interacting with a session module.
+    type SessionInterface: self::SessionInterface<Self::AccountId>;
+
+    /// The overarching call type.
+    type Call: Dispatchable + From<Call<Self>> + IsSubType<Call<Self>> + Clone;
+
+    /// Weight information for extrinsics in this pallet.
+    type WeightInfo: WeightInfo;
+
+    type TotalMiningReward: Get<u128>;
+
+    type ExistentialDeposit: Get<BalanceOf<Self>>;
+}
+
+>>>>>>> Feature/4.0 dev (#116)
 #[derive(Decode, Encode, Default, Debug, TypeInfo)]
 pub struct DelegatorData<AccountId> {
     // delegator itself
@@ -982,7 +1043,11 @@ pub mod pallet {
                 Err(Error::<T>::InsufficientValue)?
             }
 
+<<<<<<< HEAD
             frame_system::Pallet::<T>::inc_consumers(&stash).map_err(|_| Error::<T>::BadState)?;
+=======
+            system::Pallet::<T>::inc_consumers(&stash).map_err(|_| Error::<T>::BadState)?;
+>>>>>>> Feature/4.0 dev (#116)
 
             // You're auto-bonded forever, here. We might improve this by only bonding when
             // you actually validate and remove once you unbond __everything__.
@@ -2474,7 +2539,11 @@ impl<T: Config> pallet::Pallet<T> {
         <Payee<T>>::remove(stash);
         <Validators<T>>::remove(stash);
 
+<<<<<<< HEAD
         frame_system::Pallet::<T>::dec_consumers(stash);
+=======
+        system::Pallet::<T>::dec_consumers(stash);
+>>>>>>> Feature/4.0 dev (#116)
 
         Ok(())
     }

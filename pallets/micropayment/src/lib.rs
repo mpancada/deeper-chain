@@ -60,12 +60,18 @@ pub mod pallet {
     use sp_core::sr25519;
     use sp_io::crypto::sr25519_verify;
 <<<<<<< HEAD
+<<<<<<< HEAD
     use sp_runtime::traits::{Saturating, Zero};
     use sp_runtime::DispatchError;
     use sp_std::prelude::Vec;
 =======
     use sp_runtime::traits::{Saturating, StoredMapError, Zero};
 >>>>>>> remove redundant conditions
+=======
+    use sp_runtime::traits::{Saturating, Zero};
+    use sp_runtime::DispatchError;
+    use sp_std::prelude::Vec;
+>>>>>>> Feature/4.0 dev (#116)
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -271,11 +277,16 @@ pub mod pallet {
                 // signer is client
                 let chan = Channel::<T>::get(&signer, &account_id);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
                 let current_block = <frame_system::Pallet<T>>::block_number();
 =======
                 let current_block = <frame_system::Module<T>>::block_number();
 >>>>>>> client can close channel when server is offline longer than 1 era (#103)
+=======
+
+                let current_block = <frame_system::Pallet<T>>::block_number();
+>>>>>>> Feature/4.0 dev (#116)
                 if chan.expiration < current_block
                     || T::NodeInterface::get_eras_offline(&chan.server) >= 1
                 {

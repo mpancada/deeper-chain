@@ -46,7 +46,10 @@ frame_support::construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Event<T>, Config<T>},
         Credit: pallet_credit::{Pallet, Call, Storage, Event<T>},
         DeeperNode: pallet_deeper_node::{Pallet, Call, Storage, Event<T>, Config<T> },
+<<<<<<< HEAD
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+=======
+>>>>>>> Feature/4.0 dev (#116)
     }
 );
 

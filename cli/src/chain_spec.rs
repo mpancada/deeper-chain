@@ -24,16 +24,22 @@ use node_runtime::constants::currency::*;
 use node_runtime::Block;
 use node_runtime::{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Feature/4.0 dev (#116)
     wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, CreditConfig,
     DeeperNodeConfig, DemocracyConfig, ElectionsConfig, GrandpaConfig, ImOnlineConfig,
     IndicesConfig, SessionConfig, SessionKeys, SocietyConfig, StakerStatus, StakingConfig,
     SudoConfig, SystemConfig, TechnicalCommitteeConfig,
+<<<<<<< HEAD
 =======
     wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig, BalancesConfig, ContractsConfig,
     CreditConfig, DeeperNodeConfig, DemocracyConfig, ElectionsConfig, GrandpaConfig,
     ImOnlineConfig, IndicesConfig, SessionConfig, SessionKeys, SocietyConfig, StakerStatus,
     StakingConfig, SudoConfig, SystemConfig, TechnicalCommitteeConfig,
 >>>>>>> remove conucil module
+=======
+>>>>>>> Feature/4.0 dev (#116)
 };
 use pallet_credit::{CreditData, CreditLevel, CreditSetting};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
@@ -398,6 +404,7 @@ pub fn testnet_genesis(
                 .map(|member| (member.0, stash))
                 .collect(),
 <<<<<<< HEAD
+<<<<<<< HEAD
         },
         technical_committee: TechnicalCommitteeConfig {
 =======
@@ -405,6 +412,10 @@ pub fn testnet_genesis(
         //pallet_collective_Instance1: Some(CouncilConfig::default()),
         pallet_collective_Instance2: Some(TechnicalCommitteeConfig {
 >>>>>>> remove conucil module
+=======
+        },
+        technical_committee: TechnicalCommitteeConfig {
+>>>>>>> Feature/4.0 dev (#116)
             members: endowed_accounts
                 .iter()
                 .take((endowed_accounts.len() + 1) / 2)

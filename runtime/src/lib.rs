@@ -1143,6 +1143,9 @@ construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Feature/4.0 dev (#116)
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
         Utility: pallet_utility::{Pallet, Call, Event},
         Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned},
@@ -1183,6 +1186,7 @@ construct_runtime!(
         Micropayment: pallet_micropayment::{Pallet, Call, Storage, Event<T>},
         DeeperNode: pallet_deeper_node::{Pallet, Call, Storage, Event<T>, Config<T> },
         CreditAccumulation: pallet_credit_accumulation::{Pallet, Call, Storage, Event<T>},
+<<<<<<< HEAD
 =======
         System: frame_system::{Module, Call, Config, Storage, Event<T>},
         Utility: pallet_utility::{Module, Call, Event},
@@ -1225,6 +1229,8 @@ construct_runtime!(
         DeeperNode: pallet_deeper_node::{Module, Call, Storage, Event<T>, Config<T> },
         CreditAccumulation: pallet_credit_accumulation::{Module, Call, Storage, Event<T>},
 >>>>>>> remove conucil module
+=======
+>>>>>>> Feature/4.0 dev (#116)
     }
 );
 
