@@ -209,7 +209,11 @@ benchmarks! {
     scale_validator_count {
         let n in 1 .. 100;
         let pre_v_number = ValidatorCount::<T>::get();
+<<<<<<< HEAD
         let factor = PerThing::from_rational(n,100);
+=======
+        let factor = Percent::from_rational_approximation(n,100);
+>>>>>>> Refactor staking v3 syntax (#127)
     }: _(RawOrigin::Root, factor)
     verify {
         assert_eq!(ValidatorCount::<T>::get(), pre_v_number + factor * pre_v_number);

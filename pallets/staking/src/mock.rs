@@ -22,12 +22,16 @@ use crate::*;
 use frame_support::{
     assert_ok, parameter_types,
 <<<<<<< HEAD
+<<<<<<< HEAD
     traits::{Currency, FindAuthor, GenesisBuild, Get, Hooks, OneSessionHandler},
 =======
     traits::{
         Currency, FindAuthor, GenesisBuild, Get, OnFinalize, OnInitialize, OneSessionHandler,
     },
 >>>>>>> Feature/4.0 dev (#116)
+=======
+    traits::{Currency, FindAuthor, GenesisBuild, Get, Hooks, OneSessionHandler},
+>>>>>>> Refactor staking v3 syntax (#127)
     weights::constants::RocksDbWeight,
     IterableStorageMap, StorageDoubleMap, StorageValue,
 };
