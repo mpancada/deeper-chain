@@ -40,10 +40,7 @@ frame_support::construct_runtime!(
         Credit: pallet_credit::{Pallet, Call, Storage, Event<T>, Config<T>},
         DeeperNode: pallet_deeper_node::{Pallet, Call, Storage, Event<T>, Config<T>},
         CreditAccumulation: pallet_credit_accumulation::{Pallet, Call, Storage, Event<T>},
-<<<<<<< HEAD
         Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
-=======
->>>>>>> Feature/4.0 dev (#116)
     }
 );
 

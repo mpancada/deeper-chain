@@ -458,70 +458,6 @@ where
     }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-pub trait Config: frame_system::Config + SendTransactionTypes<Call<Self>> {
-    /// Number of blocks per era.
-    type BlocksPerEra: Get<<Self as frame_system::Config>::BlockNumber>;
-    /// The staking balance.
-    type Currency: LockableCurrency<Self::AccountId, Moment = Self::BlockNumber>;
-
-    /// CreditInterface of credit pallet
-    type CreditInterface: CreditInterface<Self::AccountId, BalanceOf<Self>>;
-
-    /// NodeInterface of deeper-node pallet
-    type NodeInterface: NodeInterface<Self::AccountId, Self::BlockNumber>;
-
-    /// max delegates can be selected by one delegator
-    type MaxDelegates: Get<usize>;
-
-    /// Time used for computing era duration.
-    ///
-    /// It is guaranteed to start being called from the first `on_finalize`. Thus value at genesis
-    /// is not used.
-    type UnixTime: UnixTime;
-
-    type NumberToCurrency: Convert<u128, BalanceOf<Self>>;
-
-    /// The overarching event type.
-    type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
-
-    /// Handler for the unbalanced reduction when slashing a staker.
-    type Slash: OnUnbalanced<NegativeImbalanceOf<Self>>;
-
-    /// Number of sessions per era.
-    type SessionsPerEra: Get<SessionIndex>;
-
-    /// Number of eras that staked funds must remain bonded for.
-    type BondingDuration: Get<EraIndex>;
-
-    /// Number of eras that slashes are deferred by, after computation.
-    ///
-    /// This should be less than the bonding duration. Set to 0 if slashes
-    /// should be applied immediately, without opportunity for intervention.
-    type SlashDeferDuration: Get<EraIndex>;
-
-    /// The origin which can cancel a deferred slash. Root can always do this.
-    type SlashCancelOrigin: EnsureOrigin<Self::Origin>;
-
-    /// Interface for interacting with a session module.
-    type SessionInterface: self::SessionInterface<Self::AccountId>;
-
-    /// The overarching call type.
-    type Call: Dispatchable + From<Call<Self>> + IsSubType<Call<Self>> + Clone;
-
-    /// Weight information for extrinsics in this pallet.
-    type WeightInfo: WeightInfo;
-
-    type TotalMiningReward: Get<u128>;
-
-    type ExistentialDeposit: Get<BalanceOf<Self>>;
-}
-
->>>>>>> Feature/4.0 dev (#116)
-=======
->>>>>>> Refactor staking v3 syntax (#127)
 #[derive(Decode, Encode, Default, Debug, TypeInfo)]
 pub struct DelegatorData<AccountId> {
     // delegator itself
@@ -581,7 +517,6 @@ impl Default for Releases {
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-<<<<<<< HEAD
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
@@ -614,40 +549,6 @@ pub mod pallet {
         /// The overarching event type.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-=======
-
-    #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
-    pub struct Pallet<T>(_);
-
-    #[pallet::config]
-    pub trait Config: frame_system::Config + SendTransactionTypes<Call<Self>> {
-        /// Number of blocks per era.
-        type BlocksPerEra: Get<<Self as frame_system::Config>::BlockNumber>;
-        /// The staking balance.
-        type Currency: LockableCurrency<Self::AccountId, Moment = Self::BlockNumber>;
-
-        /// CreditInterface of credit pallet
-        type CreditInterface: CreditInterface<Self::AccountId, BalanceOf<Self>>;
-
-        /// NodeInterface of deeper-node pallet
-        type NodeInterface: NodeInterface<Self::AccountId, Self::BlockNumber>;
-
-        /// max delegates can be selected by one delegator
-        type MaxDelegates: Get<usize>;
-
-        /// Time used for computing era duration.
-        ///
-        /// It is guaranteed to start being called from the first `on_finalize`. Thus value at genesis
-        /// is not used.
-        type UnixTime: UnixTime;
-
-        type NumberToCurrency: Convert<u128, BalanceOf<Self>>;
-
-        /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-
->>>>>>> Refactor staking v3 syntax (#127)
         /// Handler for the unbalanced reduction when slashing a staker.
         type Slash: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
@@ -1081,15 +982,7 @@ pub mod pallet {
                 Err(Error::<T>::InsufficientValue)?
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
             frame_system::Pallet::<T>::inc_consumers(&stash).map_err(|_| Error::<T>::BadState)?;
-=======
-            system::Pallet::<T>::inc_consumers(&stash).map_err(|_| Error::<T>::BadState)?;
->>>>>>> Feature/4.0 dev (#116)
-=======
-            frame_system::Pallet::<T>::inc_consumers(&stash).map_err(|_| Error::<T>::BadState)?;
->>>>>>> Refactor staking v3 syntax (#127)
 
             // You're auto-bonded forever, here. We might improve this by only bonding when
             // you actually validate and remove once you unbond __everything__.
@@ -2104,173 +1997,6 @@ pub mod migrations {
         ErasValidatorPrefs::<T>::translate::<OldValidatorPrefs, _>(|_, _, p| Some(p.upgraded()));
         T::BlockWeights::get().max_block
     }
-
-    #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-        fn on_runtime_upgrade() -> frame_support::weights::Weight {
-            if StorageVersion::<T>::get() == Releases::V4_0_0 {
-                StorageVersion::<T>::put(Releases::V5_0_0);
-                migrations::migrate_to_blockable::<T>()
-            } else {
-                0
-            }
-        }
-
-        fn on_initialize(now: T::BlockNumber) -> Weight {
-            // payout delegators only after the first era
-            let mut weight = T::DbWeight::get().reads_writes(1, 0);
-            if CurrentEra::<T>::get().unwrap_or(0) > 0 {
-                let remainder = now % T::BlocksPerEra::get();
-                if remainder == T::BlockNumber::default() {
-                    // first block of the era
-                    let blocks_per_era = TryInto::<u32>::try_into(T::BlocksPerEra::get())
-                        .ok()
-                        .unwrap();
-                    // figure out how many payouts to make per block, excluding the first and last block of each era
-                    let mut delegator_payouts_per_block =
-                        Self::delegator_count() / (blocks_per_era - 2);
-                    if Self::delegator_count() % (blocks_per_era - 2) > 0 {
-                        delegator_payouts_per_block += 1;
-                    }
-                    DelegatorPayoutsPerBlock::<T>::put(delegator_payouts_per_block);
-                    let prefix = Self::get_delegators_prefix_hash();
-                    DelegatorsKeyPrefix::<T>::put(prefix.clone());
-                    DelegatorsLastKey::<T>::put(prefix);
-                    weight = weight.saturating_add(T::DbWeight::get().reads_writes(3, 1));
-                } else {
-                    weight = weight.saturating_add(Self::pay_delegators());
-                }
-            }
-            let finalize_weight = T::DbWeight::get().reads_writes(1, 1);
-            weight.saturating_add(finalize_weight)
-        }
-
-        fn on_finalize(_: T::BlockNumber) {
-            // Set the start of the first era.
-            if let Some(mut active_era) = Self::active_era() {
-                if active_era.start.is_none() {
-                    let now_as_millis_u64 = T::UnixTime::now().as_millis().saturated_into::<u64>();
-                    active_era.start = Some(now_as_millis_u64);
-                    // This write only ever happens once, we don't include it in the weight in general
-                    ActiveEra::<T>::put(active_era);
-                }
-            }
-            // `on_finalize` weight is tracked in `on_initialize`
-        }
-    }
-
-    #[pallet::event]
-    #[pallet::generate_deposit(pub(crate) fn deposit_event)]
-    pub enum Event<T: Config> {
-        /// The era payout has been set; the first balance is the validator-payout; the second is
-        /// the remainder from the maximum amount of reward.
-        /// \[era_index, validator_payout, remainder\]
-        EraPayout(EraIndex, BalanceOf<T>, BalanceOf<T>),
-        /// One validator has been slashed by the given amount.
-        /// \[validator, amount\]
-        Slash(T::AccountId, BalanceOf<T>),
-        /// An old slashing report from a prior era was discarded because it could
-        /// not be processed. \[session_index\]
-        OldSlashingReportDiscarded(SessionIndex),
-        /// A new set of stakers was elected with the given \[compute\].
-        StakingElection(ElectionCompute),
-        /// A new solution for the upcoming election has been stored. \[compute\]
-        SolutionStored(ElectionCompute),
-        /// An account has bonded this amount. \[stash, amount\]
-        ///
-        /// NOTE: This event is only emitted when funds are bonded via a dispatchable. Notably,
-        /// it will not be emitted for staking rewards when they are added to stake.
-        Bonded(T::AccountId, BalanceOf<T>),
-        /// An account has unbonded this amount. \[stash, amount\]
-        Unbonded(T::AccountId, BalanceOf<T>),
-        /// An account has called `withdraw_unbonded` and removed unbonding chunks worth `BalanceOf<T>`
-        /// from the unlocking queue. \[stash, amount\]
-        Withdrawn(T::AccountId, BalanceOf<T>),
-        /// Delegated to a set of validators
-        Delegated(T::AccountId, Vec<T::AccountId>),
-        /// Undelegate from a validator
-        UnDelegated(T::AccountId),
-        /// The delegator  has been rewarded by this amount. \[account_id, amount\]
-        DelegatorReward(T::AccountId, BalanceOf<T>),
-        /// The validator  has been rewarded by this amount. \[account_id, amount\]
-        ValidatorReward(T::AccountId, BalanceOf<T>),
-    }
-
-    /// Error for the staking module.
-    #[pallet::error]
-    pub enum Error<T> {
-        /// Not a controller account.
-        NotController,
-        /// Not a stash account.
-        NotStash,
-        /// Stash is already bonded.
-        AlreadyBonded,
-        /// Controller is already paired.
-        AlreadyPaired,
-        /// Targets cannot be empty.
-        EmptyTargets,
-        /// Duplicate index.
-        DuplicateIndex,
-        /// Slash record index out of bounds.
-        InvalidSlashIndex,
-        /// Can not bond with value less than minimum balance.
-        InsufficientValue,
-        /// Can not schedule more unlock chunks.
-        NoMoreChunks,
-        /// Can not rebond without unlocking chunks.
-        NoUnlockChunk,
-        /// Attempting to target a stash that still has funds.
-        FundedTarget,
-        /// Invalid era to reward.
-        InvalidEraToReward,
-        /// Items are not sorted and unique.
-        NotSortedAndUnique,
-        /// Rewards for this era have already been claimed for this validator.
-        AlreadyClaimed,
-        /// The snapshot data of the current window is missing.
-        SnapshotUnavailable,
-        /// The call is not allowed at the given time due to restrictions of election period.
-        CallNotAllowed,
-        /// Incorrect previous history depth input provided.
-        IncorrectHistoryDepth,
-        /// Incorrect number of slashing spans provided.
-        IncorrectSlashingSpans,
-        /// Internal state has become somehow corrupted and the operation cannot continue.
-        BadState,
-        /// Have not been delegated to a validator
-        NotDelegator,
-        /// Credit score of delegator is too low
-        CreditTooLow,
-        /// Target of delegation is not in candidate validators
-        NotValidator,
-        /// Select too many candidate validators
-        TooManyValidators,
-        /// No candidate validator has been selected
-        NoValidators,
-    }
-}
-
-pub mod migrations {
-    use super::*;
-
-    #[derive(Decode)]
-    struct OldValidatorPrefs {
-        #[codec(compact)]
-        pub commission: Perbill,
-    }
-    impl OldValidatorPrefs {
-        fn upgraded(self) -> ValidatorPrefs {
-            ValidatorPrefs {
-                commission: self.commission,
-                ..Default::default()
-            }
-        }
-    }
-    pub fn migrate_to_blockable<T: Config>() -> frame_support::weights::Weight {
-        Validators::<T>::translate::<OldValidatorPrefs, _>(|_, p| Some(p.upgraded()));
-        ErasValidatorPrefs::<T>::translate::<OldValidatorPrefs, _>(|_, _, p| Some(p.upgraded()));
-        T::BlockWeights::get().max_block
-    }
 }
 
 impl<T: Config> pallet::Pallet<T> {
@@ -2748,15 +2474,7 @@ impl<T: Config> pallet::Pallet<T> {
         <Payee<T>>::remove(stash);
         <Validators<T>>::remove(stash);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         frame_system::Pallet::<T>::dec_consumers(stash);
-=======
-        system::Pallet::<T>::dec_consumers(stash);
->>>>>>> Feature/4.0 dev (#116)
-=======
-        frame_system::Pallet::<T>::dec_consumers(stash);
->>>>>>> Refactor staking v3 syntax (#127)
 
         Ok(())
     }

@@ -1,21 +1,11 @@
 name: build
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> trigger ci on pull request
 on:
   pull_request:
   push:
     branches:
       - master
       - dev
-<<<<<<< HEAD
-=======
-on: [push]
->>>>>>> add github actions
-=======
->>>>>>> trigger ci on pull request
 
 jobs:
   build:

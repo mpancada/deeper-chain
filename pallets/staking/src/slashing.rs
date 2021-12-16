@@ -443,15 +443,7 @@ impl<'a, T: 'a + Config> Drop for InspectingSpans<'a, T> {
 
 /// Clear slashing metadata for an obsolete era.
 pub(crate) fn clear_era_metadata<T: Config>(obsolete_era: EraIndex) {
-<<<<<<< HEAD
-<<<<<<< HEAD
     <Pallet<T> as Store>::ValidatorSlashInEra::remove_prefix(&obsolete_era, None);
-=======
-    <Module<T> as Store>::ValidatorSlashInEra::remove_prefix(&obsolete_era, None);
->>>>>>> Feature/4.0 dev (#116)
-=======
-    <Pallet<T> as Store>::ValidatorSlashInEra::remove_prefix(&obsolete_era, None);
->>>>>>> Refactor staking v3 syntax (#127)
 }
 
 /// Clear slashing metadata for a dead account.

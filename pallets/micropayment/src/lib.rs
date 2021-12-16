@@ -59,19 +59,9 @@ pub mod pallet {
     use pallet_deeper_node::NodeInterface;
     use sp_core::sr25519;
     use sp_io::crypto::sr25519_verify;
-<<<<<<< HEAD
-<<<<<<< HEAD
     use sp_runtime::traits::{Saturating, Zero};
     use sp_runtime::DispatchError;
     use sp_std::prelude::Vec;
-=======
-    use sp_runtime::traits::{Saturating, StoredMapError, Zero};
->>>>>>> remove redundant conditions
-=======
-    use sp_runtime::traits::{Saturating, Zero};
-    use sp_runtime::DispatchError;
-    use sp_std::prelude::Vec;
->>>>>>> Feature/4.0 dev (#116)
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -276,17 +266,8 @@ pub mod pallet {
             } else if Channel::<T>::contains_key(&signer, &account_id) {
                 // signer is client
                 let chan = Channel::<T>::get(&signer, &account_id);
-<<<<<<< HEAD
-<<<<<<< HEAD
 
                 let current_block = <frame_system::Pallet<T>>::block_number();
-=======
-                let current_block = <frame_system::Module<T>>::block_number();
->>>>>>> client can close channel when server is offline longer than 1 era (#103)
-=======
-
-                let current_block = <frame_system::Pallet<T>>::block_number();
->>>>>>> Feature/4.0 dev (#116)
                 if chan.expiration < current_block
                     || T::NodeInterface::get_eras_offline(&chan.server) >= 1
                 {
@@ -514,18 +495,7 @@ pub mod pallet {
             let result = T::Currency::mutate_account_balance(account, |balance| {
                 let min_balance = T::Currency::minimum_balance();
                 // ensure after taking amount from account, remaining balance is grater than min_balance
-<<<<<<< HEAD
-<<<<<<< HEAD
                 if balance.free <= amount.saturating_add(min_balance) {
-=======
-                if amount > balance.free
-                    || balance.free <= min_balance
-                    || amount >= balance.free - min_balance
-                {
->>>>>>> micropayment doesn't take all DPR from account
-=======
-                if balance.free <= amount.saturating_add(min_balance) {
->>>>>>> remove redundant conditions
                     return Zero::zero();
                 } else {
                     balance.free -= amount;
