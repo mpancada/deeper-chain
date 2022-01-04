@@ -1778,6 +1778,54 @@ pub mod pallet {
             Ok(())
         }
 
+        #[pallet::weight(10_000 + T::DbWeight::get().reads_writes(7,2))]
+        pub fn difference_compensation(
+            origin: OriginFor<T>,
+            delegator: T::AccountId,
+        ) -> DispatchResult {
+            ensure_root(origin)?;
+            let remainder_mining_reward = T::NumberToCurrency::convert(
+                Self::remainder_mining_reward().unwrap_or(T::TotalMiningReward::get()),
+            );
+
+            if T::NodeInterface::im_ever_online(&delegator) {
+                let received_pocr_days: Option<BalanceOf<T>> =
+                    T::CreditInterface::get_received_pocr_days(&delegator)
+                        .try_into()
+                        .ok();
+                let user_first_credit_history_era =
+                    T::CreditInterface::get_first_credit_history_era(&delegator);
+                let (rewards, _) = T::CreditInterface::get_reward(
+                    &delegator,
+                    user_first_credit_history_era,
+                    user_first_credit_history_era,
+                );
+                if let Some((_, poc_reward)) = rewards {
+                    let theoretical_reward: BalanceOf<T> =
+                        received_pocr_days.unwrap().saturating_mul(poc_reward);
+                    let actual_reward = Self::reward(&delegator).unwrap().received_pocr_reward;
+                    let compensation_reward = theoretical_reward.saturating_sub(actual_reward);
+
+                    if Reward::<T>::contains_key(&delegator) {
+                        Reward::<T>::mutate(&delegator, |data| match data {
+                            Some(reward_data) => {
+                                reward_data.received_pocr_reward += compensation_reward;
+                                reward_data.poc_reward = compensation_reward;
+                            }
+                            _ => (),
+                        });
+                    }
+                    let reward = cmp::min(remainder_mining_reward, compensation_reward);
+                    let imbalance = T::Currency::deposit_creating(&delegator, reward);
+                    Self::deposit_event(Event::<T>::DelegatorReward(
+                        delegator.clone(),
+                        imbalance.peek(),
+                    ));
+                }
+            }
+            Ok(())
+        }
+
         #[pallet::weight(10_000 + T::DbWeight::get().reads_writes(4,2))]
         pub fn compensation(
             origin: OriginFor<T>,

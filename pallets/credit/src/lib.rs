@@ -119,6 +119,8 @@ pub trait CreditInterface<AccountId, Balance> {
     fn update_credit(micropayment: (AccountId, Balance));
     fn update_credit_by_traffic(server: AccountId);
     fn get_current_era() -> EraIndex;
+    fn get_received_pocr_days(account_id: &AccountId) -> EraIndex;
+    fn get_first_credit_history_era(account_id: &AccountId) -> EraIndex;
 }
 
 #[frame_support::pallet]
@@ -532,6 +534,15 @@ pub mod pallet {
     impl<T: Config> CreditInterface<T::AccountId, BalanceOf<T>> for Pallet<T> {
         fn get_current_era() -> EraIndex {
             Self::block_to_era(<frame_system::Pallet<T>>::block_number())
+        }
+
+        fn get_received_pocr_days(account_id: &T::AccountId) -> EraIndex {
+            Self::user_credit(&account_id).unwrap().reward_eras
+                - Self::reward_countdown(&account_id).unwrap()
+        }
+
+        fn get_first_credit_history_era(account_id: &T::AccountId) -> EraIndex {
+            Self::user_credit_history(account_id)[0].0
         }
 
         fn get_credit_score(account_id: &T::AccountId) -> Option<u64> {
