@@ -537,8 +537,10 @@ pub mod pallet {
         }
 
         fn get_received_pocr_days(account_id: &T::AccountId) -> EraIndex {
-            Self::user_credit(&account_id).unwrap().reward_eras
-                - Self::reward_countdown(&account_id).unwrap()
+            Self::user_credit(&account_id)
+                .unwrap()
+                .reward_eras
+                .saturating_sub(Self::reward_countdown(&account_id).unwrap())
         }
 
         fn get_first_credit_history_era(account_id: &T::AccountId) -> EraIndex {

@@ -25,7 +25,10 @@ use frame_support::{
 use frame_system::RawOrigin;
 use mock::*;
 use pallet_balances::Error as BalancesError;
-use pallet_credit::CreditInterface;
+use pallet_credit::{
+    CreditData, CreditInterface, CreditLevel, CreditSetting, RewardCountdown, UserCredit,
+    UserCreditHistory,
+};
 use sp_runtime::traits::BadOrigin;
 use sp_staking::offence::OffenceDetails;
 use sp_std::convert::TryFrom;
@@ -2880,6 +2883,206 @@ fn undelegate() {
             assert_eq!(Staking::delegator_count(), 1);
             assert_eq!(Staking::active_delegator_count(), 0);
         });
+}
+
+#[test]
+fn difference_compensation_if_non_root() {
+    ExtBuilder::default().build().execute_with(|| {
+        // init data
+        assert_ok!(Credit::update_credit_setting(
+            RawOrigin::Root.into(),
+            CreditSetting {
+                campaign_id: 0,
+                credit_level: CreditLevel::One,
+                staking_balance: 10_000,
+                base_apy: Percent::from_percent(10),
+                bonus_apy: Percent::from_percent(0),
+                max_rank_with_bonus: 0,
+                tax_rate: Percent::from_percent(0),
+                max_referees_with_rewards: 0,
+                reward_per_referee: 0,
+            },
+        ));
+        UserCredit::<Test>::insert(
+            1,
+            CreditData {
+                campaign_id: 0,
+                credit: 100,
+                initial_credit_level: CreditLevel::One,
+                rank_in_initial_credit_level: 1u32,
+                number_of_referees: 1,
+                current_credit_level: CreditLevel::One,
+                reward_eras: 270,
+            },
+        );
+        UserCreditHistory::<Test>::insert(
+            1,
+            vec![(
+                0,
+                CreditData {
+                    campaign_id: 0,
+                    credit: 100,
+                    initial_credit_level: CreditLevel::One,
+                    rank_in_initial_credit_level: 1u32,
+                    number_of_referees: 1,
+                    current_credit_level: CreditLevel::One,
+                    reward_eras: 1,
+                },
+            )],
+        );
+        RewardCountdown::<Test>::insert(1, 260);
+
+        assert_noop!(
+            Staking::difference_compensation(Origin::signed(1), 1),
+            BadOrigin
+        );
+    });
+}
+
+#[test]
+fn difference_compensation_account_never_online() {
+    ExtBuilder::default().build().execute_with(|| {
+        // init data
+        assert_ok!(Credit::update_credit_setting(
+            RawOrigin::Root.into(),
+            CreditSetting {
+                campaign_id: 0,
+                credit_level: CreditLevel::One,
+                staking_balance: 10_000,
+                base_apy: Percent::from_percent(10),
+                bonus_apy: Percent::from_percent(0),
+                max_rank_with_bonus: 0,
+                tax_rate: Percent::from_percent(0),
+                max_referees_with_rewards: 0,
+                reward_per_referee: 0,
+            },
+        ));
+        UserCredit::<Test>::insert(
+            1,
+            CreditData {
+                campaign_id: 0,
+                credit: 100,
+                initial_credit_level: CreditLevel::One,
+                rank_in_initial_credit_level: 1u32,
+                number_of_referees: 1,
+                current_credit_level: CreditLevel::One,
+                reward_eras: 270,
+            },
+        );
+        UserCreditHistory::<Test>::insert(
+            1,
+            vec![(
+                0,
+                CreditData {
+                    campaign_id: 0,
+                    credit: 100,
+                    initial_credit_level: CreditLevel::One,
+                    rank_in_initial_credit_level: 1u32,
+                    number_of_referees: 1,
+                    current_credit_level: CreditLevel::One,
+                    reward_eras: 1,
+                },
+            )],
+        );
+        RewardCountdown::<Test>::insert(1, 260);
+        Reward::<Test>::insert(
+            1,
+            RewardData {
+                total_referee_reward: 0,
+                received_referee_reward: 0,
+                referee_reward: 0,
+                received_pocr_reward: 10,
+                poc_reward: 2,
+            },
+        );
+
+        assert_ok!(Staking::difference_compensation(RawOrigin::Root.into(), 1,));
+        assert_eq!(
+            Staking::reward(1).unwrap(),
+            RewardData {
+                total_referee_reward: 0,
+                received_referee_reward: 0,
+                referee_reward: 0,
+                received_pocr_reward: 10,
+                poc_reward: 2,
+            },
+        );
+        Reward::<Test>::remove(1);
+    });
+}
+
+#[test]
+fn difference_compensation_account_no_staking() {
+    ExtBuilder::default().build().execute_with(|| {
+        assert_ok!(DeeperNode::im_online(Origin::signed(1)));
+        assert_ok!(Credit::update_credit_setting(
+            RawOrigin::Root.into(),
+            CreditSetting {
+                campaign_id: 0,
+                credit_level: CreditLevel::One,
+                staking_balance: 10_000,
+                base_apy: Percent::from_percent(10),
+                bonus_apy: Percent::from_percent(0),
+                max_rank_with_bonus: 0,
+                tax_rate: Percent::from_percent(0),
+                max_referees_with_rewards: 0,
+                reward_per_referee: 0,
+            },
+        ));
+        // init data
+        UserCredit::<Test>::insert(
+            1,
+            CreditData {
+                campaign_id: 0,
+                credit: 100,
+                initial_credit_level: CreditLevel::One,
+                rank_in_initial_credit_level: 1u32,
+                number_of_referees: 1,
+                current_credit_level: CreditLevel::One,
+                reward_eras: 270,
+            },
+        );
+        UserCreditHistory::<Test>::insert(
+            1,
+            vec![(
+                10,
+                CreditData {
+                    campaign_id: 0,
+                    credit: 100,
+                    initial_credit_level: CreditLevel::One,
+                    rank_in_initial_credit_level: 1u32,
+                    number_of_referees: 1,
+                    current_credit_level: CreditLevel::One,
+                    reward_eras: 1,
+                },
+            )],
+        );
+        RewardCountdown::<Test>::insert(1, 260);
+        Reward::<Test>::insert(
+            1,
+            RewardData {
+                total_referee_reward: 0,
+                received_referee_reward: 0,
+                referee_reward: 0,
+                received_pocr_reward: 10,
+                poc_reward: 2,
+            },
+        );
+
+        assert_eq!(DeeperNode::get_im_online(1).unwrap(), 1);
+        RewardCountdown::<Test>::insert(1, 260);
+        assert_ok!(Staking::difference_compensation(RawOrigin::Root.into(), 1,));
+        assert_eq!(
+            Staking::reward(1).unwrap(),
+            RewardData {
+                total_referee_reward: 0,
+                received_referee_reward: 0,
+                referee_reward: 0,
+                received_pocr_reward: 10,
+                poc_reward: 2,
+            },
+        );
+    });
 }
 
 #[test]

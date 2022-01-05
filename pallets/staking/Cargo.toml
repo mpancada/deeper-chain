@@ -44,6 +44,7 @@ sp-storage = {git = "https://github.com/paritytech/substrate", branch = "polkado
 sp-tracing = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12" }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12" }
+pallet-credit = { default-features = false, path = "../credit", version = "3.0.0" }
 rand_chacha = { version = "0.2" }
 parking_lot = "0.11.1"
 hex = "0.4"
